@@ -87,10 +87,13 @@
       if(!format){
         format = "csv";
       }
-      debugger
+      
       if(!file_name){
         file_name = `data`;
       }
+      document.querySelector(`[name="featureLayer"]`).value = feature_layer;
+      document.querySelector(`[name="fileName"]`).value = file_name;
+      document.querySelector(`option[value="${format}"]`).setAttribute("selected","selected")
 
       downloadData = function(fields, data, format){
         let mimeType;
