@@ -10,4 +10,4 @@ It accepts two parameters:
 * **fileName**: file name
 * **f**: format (`csv` or `json`)
 
-[Demo](https://esri-es.github.io/download-feature-service/?fileName=riesgo_de_pobreza.csv&featureLayer=https://services1.arcgis.com/nCKYwcSONQTkPA4K/arcgis/rest/services/CCAA_indicador_Arope/FeatureServer/0/)
+[Demo](https://esri-es.github.io/download-feature-service/?fileName=riesgo_de_pobreza&featureLayer=https://services1.arcgis.com/nCKYwcSONQTkPA4K/arcgis/rest/services/CCAA_indicador_Arope/FeatureServer/0/&f=json)
