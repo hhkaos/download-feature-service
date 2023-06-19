@@ -10,7 +10,6 @@
   <link rel="manifest" href="site.webmanifest">
   <link rel="apple-touch-icon" href="icon.png">
 
-  <link rel="stylesheet" href="css/normalize.css">
   <style>
     body{
       margin: 1rem;
@@ -39,6 +38,7 @@
     
     let feature_layer = getUrlParameter('featureLayer');
     let file_name = getUrlParameter('fileName');
+    let format = getUrlParameter('f');
 
     if(!feature_layer){
       feature_layer = "https://services7.arcgis.com/lTrEzFGSU2ayogtj/arcgis/rest/services/COMPLETA_Afectados_por_coronavirus_por_provincia_en_Espa%C3%B1a_Vista_Solo_lectura/FeatureServer/0";
@@ -46,41 +46,51 @@
     if(!file_name){
       file_name = "afectados_por_coronavirus_por_provincia.csv";
     }
+    if(!format){
+      format = "csv";
+    }
 
-    let downloadCSV = function(fields, data){
+    let downloadData = function(fields, data, format){
+      let mimeType;
+      if(format.toLowerCase() === "csv"){
+        let csv = '',
+            fieldsLen = fields.length,
+            dataLen = data.length,
+            fieldsArray = [];
 
-      let csv = '',
-          fieldsLen = fields.length,
-          dataLen = data.length,
-          fieldsArray = [];
+        for(i = 0; i < fieldsLen; i++){
+          csv += `"${fields[i].name}"`;
+          fieldsArray.push(fields[i].name);
 
-      for(i = 0; i < fieldsLen; i++){
-        csv += `"${fields[i].name}"`;
-        fieldsArray.push(fields[i].name);
-
-        if(i === (fieldsLen - 1)){
-          csv += '\n';
-        }else{
-          csv += ',';
-        }
-      }
-
-      let fieldsArrayLen = fieldsArray.length;
-
-      for(i = 0; i < dataLen; i++){
-        for(j = 0; j < fieldsArrayLen; j++){
-          csv += `"${data[i].attributes[fieldsArray[j]]}"`;
-
-          if(j === (fieldsArrayLen - 1)){
+          if(i === (fieldsLen - 1)){
             csv += '\n';
           }else{
             csv += ',';
           }
         }
+
+        let fieldsArrayLen = fieldsArray.length;
+
+        for(i = 0; i < dataLen; i++){
+          for(j = 0; j < fieldsArrayLen; j++){
+            csv += `"${data[i].attributes[fieldsArray[j]]}"`;
+
+            if(j === (fieldsArrayLen - 1)){
+              csv += '\n';
+            }else{
+              csv += ',';
+            }
+          }
+        }
+        data = csv;
+        mimeType = "text/csv"
+      }else{
+        data = JSON.stringify(data);
+        mimeType = "application/json"
       }
       
       var dlAnchorElem = document.getElementById('btnDownload');
-      dlAnchorElem.setAttribute("href","data:text/csv,"+     encodeURIComponent(csv)     );
+      dlAnchorElem.setAttribute("href",`data:${mimeType};charset=utf-8,${encodeURIComponent(data)}`);
       dlAnchorElem.setAttribute("download", file_name);
       setTimeout(function(){dlAnchorElem.click();}, 3000)
     }
@@ -114,7 +124,7 @@
           });
 
         }else{
-          downloadCSV(data.fields, concatFeatures);
+          downloadData(data.fields, concatFeatures, format.toLowerCase());
         }
       });
     }
