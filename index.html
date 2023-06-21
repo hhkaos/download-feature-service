@@ -130,7 +130,10 @@
           data = csv;
           mimeType = "text/csv"
         }else{
-          data = JSON.stringify(data);
+          data = JSON.stringify({
+            "type": "FeatureCollection",
+            "features": data
+          });
           mimeType = "application/json"
         }
         
