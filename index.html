@@ -131,8 +131,8 @@
           mimeType = "text/csv"
         }else{
           data = JSON.stringify({
-            "type": "FeatureCollection",
-            "features": data
+            type: 'FeatureCollection',
+            features: data 
           });
           mimeType = "application/json"
         }
@@ -151,22 +151,26 @@
           offset: 0
         }
       }
-
+      let opts = {
+        'where': '1=1',
+        'outFields': '*',
+        'resultOffset': config.offset ,
+        'returnExceededLimitFeatures': true,
+        'f': 'geojson'
+      };
+      if(format.toLowerCase() === "csv"){
+        opts.returnGeometry = false;
+      }else{
+        opts.returnGeometry = true;
+      }
       $.ajax({
         dataType: "json",
         url: `${feature_layer}/query`,
-        data: {
-          'where': '1=1',
-          'outFields': '*',
-          'returnGeometry': false,
-          'resultOffset': config.offset ,
-          'returnExceededLimitFeatures': true,
-          'f': 'pjson'
-        }
+        data: opts
       }).done(function(data){
-        
         let concatFeatures = config.features.concat(data.features);
-        if(data.exceededTransferLimit === true){
+        
+        if((data.properties?.exceededTransferLimit) === true){
           getAllFeatures({
             features: concatFeatures,
             offset: config.offset + data.features.length
